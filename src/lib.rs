@@ -1,6 +1,8 @@
 use clap::Parser;
+pub mod hardware_search;
+pub mod listener;
 
-enum Errors {
+pub enum Errors {
     MissingArguements(String),
 }
 
@@ -22,7 +24,7 @@ struct Args {
     command: String,
 }
 
-fn main() {
+pub fn parse_args() -> Result<(), Errors> {
     let args = Args::parse();
 
     let state = (
@@ -32,17 +34,28 @@ fn main() {
         args.send,
     );
 
+    // Listen, Port, Command, Send
     match state {
         // Successful listen command
         (true, true, _, _) => {}
         // Failed missing command
-        (true, false, _, _) => {}
+        (true, false, _, _) => {
+            return Err(Errors::MissingArguements(
+                "A port must be specified for the listener command.".to_string(),
+            ))
+        }
         // Successful send command
         (_, true, true, true) => {}
         // Failed send command
-        (_, true, false, true) => {}
+        (_, true, false, true) => {
+            return Err(Errors::MissingArguements(
+                "A command must be specified for the send command to function.".to_string(),
+            ))
+        }
         // Failed send command
         (_, _, _, false) => {}
         _ => {}
-    }
+    };
+
+    todo!()
 }
